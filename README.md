@@ -288,4 +288,3 @@ Business Source License 1.1
 ## Version
 
 1.0.0 (Standalone Distribution)
-# AEGIS Certify — OpenAI Safety Fellowship Submission
