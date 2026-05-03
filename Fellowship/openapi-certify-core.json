@@ -683,6 +683,175 @@
         }
       }
     },
+    "/v1/context-graph": {
+      "post": {
+        "tags": [
+          "Context Graph / G16"
+        ],
+        "summary": "Build a certified context graph",
+        "description": "Construct a Context Graph CG = (V, E, \u03bb) for a certification epoch. Nodes represent operational domains/tasks; edges represent valid transitions. The returned graph_id is used in subsequent evaluation calls.",
+        "operationId": "build_context_graph_v1_context_graph_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BuildContextGraphRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildContextGraphResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/context-graph/evaluate": {
+      "post": {
+        "tags": [
+          "Context Graph / G16"
+        ],
+        "summary": "Evaluate a traversal path via Gate G16",
+        "description": "Run Gate G16 (Context/Domain Shift) on an agent's traversal path. Returns PASS / WARN / FAIL with enforcement action (NONE / HITL / HALT) and a full audit trace. FAIL-dominant: any FORBIDDEN node collapses the path.",
+        "operationId": "evaluate_path_v1_context_graph_evaluate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluatePathRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluatePathResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/context-graph/validate-node": {
+      "post": {
+        "tags": [
+          "Context Graph / G16"
+        ],
+        "summary": "Validate a single context node",
+        "description": "Check if a specific node in a context graph is certified, provisional, or forbidden.",
+        "operationId": "validate_node_v1_context_graph_validate_node_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateNodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidateNodeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/context-graph/{graph_id}": {
+      "get": {
+        "tags": [
+          "Context Graph / G16"
+        ],
+        "summary": "Get context graph summary",
+        "description": "Retrieve the structure and label distribution of a context graph.",
+        "operationId": "get_context_graph_v1_context_graph__graph_id__get",
+        "parameters": [
+          {
+            "name": "graph_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Graph Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContextGraphSummaryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/predicates": {
       "get": {
         "tags": [
@@ -1838,6 +2007,87 @@
         "title": "BatchPredicateResponse",
         "description": "Response for batch predicate evaluation."
       },
+      "BuildContextGraphRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Human-readable name for this context graph"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/ContextNodeRequest"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Nodes",
+            "description": "Context nodes (V)"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/ContextEdgeRequest"
+            },
+            "type": "array",
+            "title": "Edges",
+            "description": "Context edges (E)"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "nodes"
+        ],
+        "title": "BuildContextGraphRequest"
+      },
+      "BuildContextGraphResponse": {
+        "properties": {
+          "graph_id": {
+            "type": "string",
+            "title": "Graph Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "fingerprint": {
+            "type": "string",
+            "title": "Fingerprint"
+          },
+          "node_count": {
+            "type": "integer",
+            "title": "Node Count"
+          },
+          "edge_count": {
+            "type": "integer",
+            "title": "Edge Count"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "graph_id",
+          "name",
+          "fingerprint",
+          "node_count",
+          "edge_count",
+          "created_at"
+        ],
+        "title": "BuildContextGraphResponse"
+      },
       "CAIBadge": {
         "properties": {
           "artifact_id": {
@@ -2772,6 +3022,172 @@
         "title": "Context",
         "description": "Evaluation context \u2014 determines applicable predicates and thresholds."
       },
+      "ContextEdgeRequest": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Source node_id"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target",
+            "description": "Target node_id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "TRANSITION",
+              "DEPENDENCY",
+              "CAPABILITY",
+              "TRUST"
+            ],
+            "title": "Kind",
+            "description": "Semantic type of the edge",
+            "default": "TRANSITION"
+          },
+          "certified": {
+            "type": "boolean",
+            "title": "Certified",
+            "description": "Whether this edge is part of the certified subgraph",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "target"
+        ],
+        "title": "ContextEdgeRequest"
+      },
+      "ContextGraphSummaryResponse": {
+        "properties": {
+          "graph_id": {
+            "type": "string",
+            "title": "Graph Id"
+          },
+          "fingerprint": {
+            "type": "string",
+            "title": "Fingerprint"
+          },
+          "node_count": {
+            "type": "integer",
+            "title": "Node Count"
+          },
+          "edge_count": {
+            "type": "integer",
+            "title": "Edge Count"
+          },
+          "nodes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Nodes"
+          },
+          "edges": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Edges"
+          },
+          "label_distribution": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Label Distribution"
+          }
+        },
+        "type": "object",
+        "required": [
+          "graph_id",
+          "fingerprint",
+          "node_count",
+          "edge_count",
+          "nodes",
+          "edges",
+          "label_distribution"
+        ],
+        "title": "ContextGraphSummaryResponse"
+      },
+      "ContextNodeRequest": {
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "title": "Node Id",
+            "description": "Unique node identifier"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain",
+            "description": "Operational domain (e.g. 'healthcare', 'finance')"
+          },
+          "task_type": {
+            "type": "string",
+            "title": "Task Type",
+            "description": "Task category (e.g. 'diagnosis', 'summarisation')"
+          },
+          "agent_role": {
+            "type": "string",
+            "title": "Agent Role",
+            "description": "Agent role in this context"
+          },
+          "data_scope": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Data Scope",
+            "description": "Data categories in scope"
+          },
+          "trust_tier": {
+            "type": "integer",
+            "maximum": 4.0,
+            "minimum": 0.0,
+            "title": "Trust Tier",
+            "description": "Trust level 0 (untrusted) to 4 (fully certified)",
+            "default": 2
+          },
+          "time_window": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Window",
+            "description": "ISO-8601 validity window [start, end], or null for no expiry"
+          },
+          "label": {
+            "type": "string",
+            "enum": [
+              "CERTIFIED",
+              "PROVISIONAL",
+              "FORBIDDEN"
+            ],
+            "title": "Label",
+            "description": "Certification label for this node",
+            "default": "CERTIFIED"
+          }
+        },
+        "type": "object",
+        "required": [
+          "node_id",
+          "domain",
+          "task_type",
+          "agent_role"
+        ],
+        "title": "ContextNodeRequest"
+      },
       "Decision": {
         "type": "string",
         "enum": [
@@ -2832,6 +3248,130 @@
         ],
         "title": "EvaluateGateRequest",
         "description": "Request to evaluate a single gate."
+      },
+      "EvaluatePathRequest": {
+        "properties": {
+          "graph_id": {
+            "type": "string",
+            "title": "Graph Id",
+            "description": "ID of the context graph to evaluate against"
+          },
+          "path": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Path",
+            "description": "Ordered list of node_ids representing the agent's traversal"
+          },
+          "hard_mode": {
+            "type": "boolean",
+            "title": "Hard Mode",
+            "description": "If True, FAIL \u2192 HALT (not just HITL). Use for high-risk domains.",
+            "default": false
+          },
+          "evidence_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Id",
+            "description": "Upstream evidence reference for audit trace"
+          },
+          "evaluated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluated At",
+            "description": "ISO-8601 timestamp for evaluation (default: now UTC)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "graph_id",
+          "path"
+        ],
+        "title": "EvaluatePathRequest"
+      },
+      "EvaluatePathResponse": {
+        "properties": {
+          "trace_id": {
+            "type": "string",
+            "title": "Trace Id"
+          },
+          "gate_id": {
+            "type": "string",
+            "title": "Gate Id",
+            "default": "G16"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "WARN",
+              "FAIL"
+            ],
+            "title": "Decision"
+          },
+          "enforcement": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "HITL",
+              "HALT"
+            ],
+            "title": "Enforcement"
+          },
+          "cg_fingerprint": {
+            "type": "string",
+            "title": "Cg Fingerprint"
+          },
+          "path": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Path"
+          },
+          "pcu_results": {
+            "items": {
+              "$ref": "#/components/schemas/PCUResultResponse"
+            },
+            "type": "array",
+            "title": "Pcu Results"
+          },
+          "audit_trace": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Audit Trace"
+          },
+          "evaluated_at": {
+            "type": "string",
+            "title": "Evaluated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "trace_id",
+          "decision",
+          "enforcement",
+          "cg_fingerprint",
+          "path",
+          "pcu_results",
+          "audit_trace",
+          "evaluated_at"
+        ],
+        "title": "EvaluatePathResponse"
       },
       "EvaluatePredicateRequest": {
         "properties": {
@@ -3862,6 +4402,45 @@
         "title": "PCUResult",
         "description": "Result of a single PCU evaluation.\n\nEvery PCU emits this structured result for traceability.\nNo PCU may emit a result without all required fields."
       },
+      "PCUResultResponse": {
+        "properties": {
+          "pcu_id": {
+            "type": "string",
+            "title": "Pcu Id"
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "PASS",
+              "WARN",
+              "FAIL"
+            ],
+            "title": "Decision"
+          },
+          "predicate_id": {
+            "type": "string",
+            "title": "Predicate Id"
+          },
+          "measured": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Measured"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pcu_id",
+          "decision",
+          "predicate_id",
+          "measured",
+          "timestamp"
+        ],
+        "title": "PCUResultResponse"
+      },
       "PCUType": {
         "type": "string",
         "enum": [
@@ -4161,6 +4740,100 @@
         ],
         "title": "RegistryStats",
         "description": "Registry statistics."
+      },
+      "ValidateNodeRequest": {
+        "properties": {
+          "graph_id": {
+            "type": "string",
+            "title": "Graph Id",
+            "description": "ID of the context graph"
+          },
+          "node_id": {
+            "type": "string",
+            "title": "Node Id",
+            "description": "Node to validate"
+          },
+          "evaluated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evaluated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "graph_id",
+          "node_id"
+        ],
+        "title": "ValidateNodeRequest"
+      },
+      "ValidateNodeResponse": {
+        "properties": {
+          "trace_id": {
+            "type": "string",
+            "title": "Trace Id"
+          },
+          "node_id": {
+            "type": "string",
+            "title": "Node Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "task_type": {
+            "type": "string",
+            "title": "Task Type"
+          },
+          "trust_tier": {
+            "type": "integer",
+            "title": "Trust Tier"
+          },
+          "is_certified": {
+            "type": "boolean",
+            "title": "Is Certified"
+          },
+          "is_provisional": {
+            "type": "boolean",
+            "title": "Is Provisional"
+          },
+          "is_forbidden": {
+            "type": "boolean",
+            "title": "Is Forbidden"
+          },
+          "temporally_valid": {
+            "type": "boolean",
+            "title": "Temporally Valid"
+          },
+          "evaluated_at": {
+            "type": "string",
+            "title": "Evaluated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "trace_id",
+          "node_id",
+          "label",
+          "domain",
+          "task_type",
+          "trust_tier",
+          "is_certified",
+          "is_provisional",
+          "is_forbidden",
+          "temporally_valid",
+          "evaluated_at"
+        ],
+        "title": "ValidateNodeResponse"
       },
       "ValidationError": {
         "properties": {
