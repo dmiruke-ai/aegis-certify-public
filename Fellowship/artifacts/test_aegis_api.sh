@@ -165,7 +165,7 @@ RUN=$(curl -s -X POST "$API_BASE/experiments/$EXPERIMENT_ID/runs" \
     "name": "Run 1 - Automated Test",
     "system_type": "aegis",
     "model_provider": "ollama",
-    "model_name": "llama3.2:3b",
+    "model_name": "mistral:latest",
     "config": {
       "use_aegis": true,
       "jailbreak_threshold": 0.7
