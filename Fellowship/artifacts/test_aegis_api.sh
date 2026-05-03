@@ -11,6 +11,8 @@
 BASE_URL="http://37.27.97.75:18000"
 API_BASE="$BASE_URL/api/v1"
 CG_BASE="$API_BASE/context-graph"
+OLLAMA_URL="http://localhost:11434"
+OLLAMA_MODEL="mistral:latest"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -31,6 +33,32 @@ if ! command -v jq &> /dev/null; then
     echo "Install with: sudo apt-get install jq"
     exit 1
 fi
+
+# Pre-flight: Ensure Ollama is running and model is available
+echo -e "${YELLOW}[PRE] Checking Ollama service...${NC}"
+if ! curl -s "$OLLAMA_URL/api/tags" > /dev/null 2>&1; then
+    echo -e "${YELLOW}  Ollama not responding — attempting to start...${NC}"
+    ollama serve > /dev/null 2>&1 &
+    sleep 5
+    if ! curl -s "$OLLAMA_URL/api/tags" > /dev/null 2>&1; then
+        echo -e "${RED}  ✗ Could not start Ollama. Run: ollama serve${NC}"
+        echo -e "${YELLOW}  Continuing — LLM-dependent steps will be skipped${NC}"
+    else
+        echo -e "${GREEN}  ✓ Ollama started${NC}"
+    fi
+else
+    echo -e "${GREEN}  ✓ Ollama is running${NC}"
+fi
+
+# Check if model is available, pull if missing
+if curl -s "$OLLAMA_URL/api/tags" | jq -r '.models[].name' 2>/dev/null | grep -q "^${OLLAMA_MODEL}$"; then
+    echo -e "${GREEN}  ✓ Model $OLLAMA_MODEL available${NC}"
+else
+    echo -e "${YELLOW}  Model $OLLAMA_MODEL not found — pulling...${NC}"
+    ollama pull "$OLLAMA_MODEL"
+    echo -e "${GREEN}  ✓ Model $OLLAMA_MODEL ready${NC}"
+fi
+echo ""
 
 # Step 1: Health Check
 echo -e "${YELLOW}[1/12] Health Check...${NC}"
