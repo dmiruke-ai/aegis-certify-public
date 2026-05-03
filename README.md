@@ -23,7 +23,7 @@ No installation required. The API is live and ready to use:
 # Health check
 curl http://37.27.97.75:18000/health
 
-# List all research hypotheses (H1-H5)
+# List all research hypotheses (H1-H7)
 curl http://37.27.97.75:18000/api/v1/hypotheses
 
 # List all experiments
@@ -31,6 +31,53 @@ curl http://37.27.97.75:18000/api/v1/experiments
 
 # List available metrics
 curl http://37.27.97.75:18000/api/v1/metrics/available
+```
+
+### Context Graph / G16 Domain Drift Detection
+
+```bash
+# 1. Build a certified context graph
+GRAPH=$(curl -s -X POST http://37.27.97.75:18000/api/v1/context-graph \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "healthcare-agent",
+    "nodes": [
+      {"node_id": "intake",    "domain": "healthcare", "task_type": "triage",    "agent_role": "assistant", "data_scope": ["pii","phi"], "trust_tier": 3, "label": "CERTIFIED"},
+      {"node_id": "diagnosis", "domain": "healthcare", "task_type": "diagnosis", "agent_role": "assistant", "data_scope": ["phi"],       "trust_tier": 3, "label": "CERTIFIED"},
+      {"node_id": "billing",   "domain": "finance",    "task_type": "billing",   "agent_role": "assistant", "data_scope": ["pii"],       "trust_tier": 2, "label": "PROVISIONAL"},
+      {"node_id": "external",  "domain": "internet",   "task_type": "search",    "agent_role": "tool",      "data_scope": [],            "trust_tier": 0, "label": "FORBIDDEN"}
+    ],
+    "edges": [
+      {"source": "intake",    "target": "diagnosis", "kind": "TRANSITION", "certified": true},
+      {"source": "diagnosis", "target": "billing",   "kind": "TRANSITION", "certified": true},
+      {"source": "billing",   "target": "external",  "kind": "TRANSITION", "certified": false}
+    ]
+  }')
+GRAPH_ID=$(echo $GRAPH | python3 -c "import json,sys; print(json.load(sys.stdin)['graph_id'])")
+
+# 2. Evaluate a path — PASS (all CERTIFIED nodes)
+curl -s -X POST http://37.27.97.75:18000/api/v1/context-graph/evaluate \
+  -H "Content-Type: application/json" \
+  -d "{\"graph_id\": \"$GRAPH_ID\", \"path\": [\"intake\", \"diagnosis\"]}"
+# → {"decision": "PASS", "enforcement": "NONE", ...}
+
+# 3. Evaluate a path — WARN (hits PROVISIONAL node → HITL)
+curl -s -X POST http://37.27.97.75:18000/api/v1/context-graph/evaluate \
+  -H "Content-Type: application/json" \
+  -d "{\"graph_id\": \"$GRAPH_ID\", \"path\": [\"intake\", \"diagnosis\", \"billing\"]}"
+# → {"decision": "WARN", "enforcement": "HITL", ...}
+
+# 4. Evaluate a path — FAIL (hits FORBIDDEN node → HALT)
+curl -s -X POST http://37.27.97.75:18000/api/v1/context-graph/evaluate \
+  -H "Content-Type: application/json" \
+  -d "{\"graph_id\": \"$GRAPH_ID\", \"path\": [\"intake\", \"diagnosis\", \"external\"], \"hard_mode\": true}"
+# → {"decision": "FAIL", "enforcement": "HALT", ...}
+
+# 5. Validate a single node
+curl -s -X POST http://37.27.97.75:18000/api/v1/context-graph/validate-node \
+  -H "Content-Type: application/json" \
+  -d "{\"graph_id\": \"$GRAPH_ID\", \"node_id\": \"external\"}"
+# → {"label": "FORBIDDEN", "is_forbidden": true, ...}
 ```
 
 Full interactive examples available at the Swagger UI above.
