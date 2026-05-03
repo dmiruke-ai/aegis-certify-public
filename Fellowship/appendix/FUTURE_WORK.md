@@ -503,7 +503,7 @@ aegis-certify/
 ### Research Contributions
 
 **Publications:**
-1. "AEGIS Algebra: A Unified Mathematical Framework for Executable Assurance" (arXiv)
+1. "AEGIS Algebra: A Unified Mathematical Framework for Executable Assurance" (manuscript in preparation)
 2. "Compositional Safety via Sheaf Theory in Multi-Agent Systems" (ICML/NeurIPS)
 3. "Evidence-Based AI Control for Frontier Agentic Systems" (IEEE S&P)
 

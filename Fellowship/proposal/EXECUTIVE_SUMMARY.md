@@ -58,5 +58,5 @@ AEGIS provides the missing infrastructure layer between model capabilities and r
 **Project GitHub:** https://github.com/mirdattamir/aegis-certify-public
 **Live API:** http://37.27.97.75:18000/docs#/
 **Contact:** Dattaram Miruke — dattamiruke@gmail.com
-**Theoretical Foundation:** AEGIS Algebra - A Unified Mathematical Framework for Executable Assurance of Agentic AI Artifacts (submitted to arXiv)
+**Theoretical Foundation:** AEGIS Algebra - A Unified Mathematical Framework for Executable Assurance of Agentic AI Artifacts (manuscript in preparation)
 **Experimental Validation:** 866 test cases, 7 attack categories, 4 validated hypotheses

@@ -287,7 +287,7 @@ chmod +x test_aegis_api.sh
 ## 📧 Support
 
 **API Documentation:** http://37.27.97.75:18000/docs
-**GitHub Repository:** [Your repo link]
+\*\*GitHub Repository:\*\* https://github.com/mirdattamir/aegis-certify-public
 **Issues:** See main repository README
 
 ---
