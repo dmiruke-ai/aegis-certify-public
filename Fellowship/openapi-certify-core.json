@@ -1,0 +1,4207 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AEGIS Certify API",
+    "description": "Deterministic, mathematically-grounded AI compliance assurance. Evaluates AI systems against regulatory predicates using executable Primary Compute Units (PCUs), enforced through a FAIL-dominant lattice gate architecture.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health Check",
+        "description": "Health check endpoint.\n\nReturns the overall health status of the AEGIS Certify service.\nUsed by Kubernetes liveness probes and monitoring systems.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Readiness Check",
+        "description": "Readiness check endpoint.\n\nReturns whether the service is ready to accept traffic.\nUsed by Kubernetes readiness probes and load balancers.",
+        "operationId": "readiness_check_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/live": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Liveness Check",
+        "description": "Simple liveness check.\n\nReturns 200 OK if the service is running.\nMinimal overhead for frequent Kubernetes liveness probes.",
+        "operationId": "liveness_check_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Liveness Check Live Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cai/compute": {
+      "post": {
+        "tags": [
+          "CAI",
+          "CAI"
+        ],
+        "summary": "Compute Cai",
+        "description": "Compute CAI (Composite Assurance Index) for an artifact.\n\nCAI is derived from running full certification through the AEGIS\nControl Plane, then computing the AssuranceRank from the matroid\nbasis of passed predicates.\n\nThe CAI score is normalized to 0-100 for human readability.",
+        "operationId": "compute_cai_v1_cai_compute_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CAIComputeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CAIComputeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cai/levels": {
+      "get": {
+        "tags": [
+          "CAI",
+          "CAI"
+        ],
+        "summary": "Get Cai Levels",
+        "description": "Get all CAI level definitions.\n\nReturns the thresholds, requirements, and benefits for each\nCAI certification level (Platinum, Gold, Silver, Bronze, Uncertified).",
+        "operationId": "get_cai_levels_v1_cai_levels_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CAILevelsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cai/{artifact_id}": {
+      "get": {
+        "tags": [
+          "CAI",
+          "CAI"
+        ],
+        "summary": "Get Cai",
+        "description": "Get the latest CAI score for an artifact.\n\nReturns the most recent CAI computation result for the specified artifact.",
+        "operationId": "get_cai_v1_cai__artifact_id__get",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CAIResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cai/{artifact_id}/history": {
+      "get": {
+        "tags": [
+          "CAI",
+          "CAI"
+        ],
+        "summary": "Get Cai History",
+        "description": "Get CAI score history for an artifact.\n\nReturns historical CAI scores with optional trend analysis.",
+        "operationId": "get_cai_history_v1_cai__artifact_id__history_get",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Maximum history entries",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Maximum history entries"
+          },
+          {
+            "name": "include_trend",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Include trend analysis",
+              "default": true,
+              "title": "Include Trend"
+            },
+            "description": "Include trend analysis"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CAIHistoryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cai/{artifact_id}/badge": {
+      "get": {
+        "tags": [
+          "CAI",
+          "CAI"
+        ],
+        "summary": "Get Cai Badge",
+        "description": "Get trust badge for an artifact.\n\nReturns a badge suitable for display in marketplace listings,\ndocumentation, or compliance dashboards.\n\nFormats:\n- json: Structured badge data\n- svg: Embeddable SVG image\n- markdown: Markdown badge syntax",
+        "operationId": "get_cai_badge_v1_cai__artifact_id__badge_get",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/CAIBadgeFormat",
+              "description": "Badge format",
+              "default": "json"
+            },
+            "description": "Badge format"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CAIBadge"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cai/validate": {
+      "post": {
+        "tags": [
+          "CAI",
+          "CAI"
+        ],
+        "summary": "Validate For Marketplace",
+        "description": "Validate artifact eligibility for marketplace listing.\n\nPerforms full CAI computation and checks if the artifact meets\nthe minimum requirements for marketplace publication.\n\nThis endpoint is designed for integration with InferLoop Marketplace.",
+        "operationId": "validate_for_marketplace_v1_cai_validate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketplaceValidationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarketplaceValidationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cai/{artifact_id}/certificate": {
+      "get": {
+        "tags": [
+          "CAI",
+          "CAI"
+        ],
+        "summary": "Get Cai Certificate",
+        "description": "Get certification attestation for an artifact.\n\nReturns a formal certificate suitable for regulatory submissions,\naudit trails, and compliance documentation.\n\nThe certificate includes cryptographic verification data for\ntamper-evident attestation.",
+        "operationId": "get_cai_certificate_v1_cai__artifact_id__certificate_get",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CAICertificate"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/certify": {
+      "post": {
+        "tags": [
+          "Certification"
+        ],
+        "summary": "Certify",
+        "description": "Run full certification against regulatory frameworks.\n\nEvaluates all applicable predicates through PCUs, computes gate\ndecisions via FAIL-dominant lattice, returns enforcement decision.\n\nThe returned decision is authoritative:\n  - HALT: Execution must be blocked (at least one gate FAIL)\n  - THROTTLE: Reduced autonomy (WARN present, no FAIL)\n  - PERMIT: Bounded autonomy allowed (all gates PASS)",
+        "operationId": "certify_v1_certify_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertifyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CertifyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/artifacts/{artifact_id}/certify": {
+      "post": {
+        "tags": [
+          "Certification"
+        ],
+        "summary": "Certify Artifact",
+        "description": "Certify a specific artifact by ID.\n\nResource-oriented endpoint for certifying a known artifact.\nThe artifact_id in the path should match request.artifact.id.",
+        "operationId": "certify_artifact_v1_artifacts__artifact_id__certify_post",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CertifyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CertifyResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/predicates/{predicate_id}/evaluate": {
+      "post": {
+        "tags": [
+          "Certification"
+        ],
+        "summary": "Evaluate Predicate",
+        "description": "Evaluate a single predicate with provided evidence.\n\nReturns whether the predicate is satisfied, along with\nthe individual PCU results that contributed to the decision.",
+        "operationId": "evaluate_predicate_v1_predicates__predicate_id__evaluate_post",
+        "parameters": [
+          {
+            "name": "predicate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Predicate Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluatePredicateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredicateResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gates/{gate_id}/evaluate": {
+      "post": {
+        "tags": [
+          "Certification"
+        ],
+        "summary": "Evaluate Gate",
+        "description": "Evaluate a single gate (all predicates within that gate's domain).\n\nReturns the gate decision computed via FAIL-dominant lattice:\n  - FAIL: At least one PCU failed\n  - WARN: No failures, but some warnings\n  - PASS: All PCUs passed",
+        "operationId": "evaluate_gate_v1_gates__gate_id__evaluate_post",
+        "parameters": [
+          {
+            "name": "gate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Gate Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluateGateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/predicates/batch-evaluate": {
+      "post": {
+        "tags": [
+          "Certification"
+        ],
+        "summary": "Batch Evaluate Predicates",
+        "description": "Batch evaluation of multiple predicates in a single round-trip.\n\nMore efficient than individual calls when evaluating multiple predicates\nwith shared evidence.",
+        "operationId": "batch_evaluate_predicates_v1_predicates_batch_evaluate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchPredicateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchPredicateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/intercept-action": {
+      "post": {
+        "tags": [
+          "Certification"
+        ],
+        "summary": "Intercept Action",
+        "description": "Intercept a unit action before execution.",
+        "operationId": "intercept_action_v1_intercept_action_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterceptActionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterceptActionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/predicates": {
+      "get": {
+        "tags": [
+          "Predicates"
+        ],
+        "summary": "List Predicates",
+        "description": "List all predicates with optional filtering.\n\nPredicates are formal logical assertions of the form P : (A, C) -> {true, false}.\nEach predicate is implementation-agnostic and stable across PCU versions.",
+        "operationId": "list_predicates_v1_predicates_get",
+        "parameters": [
+          {
+            "name": "framework",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by framework",
+              "title": "Framework"
+            },
+            "description": "Filter by framework"
+          },
+          {
+            "name": "gate_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by gate",
+              "title": "Gate Id"
+            },
+            "description": "Filter by gate"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by category",
+              "title": "Category"
+            },
+            "description": "Filter by category"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Items per page",
+              "default": 50,
+              "title": "Page Size"
+            },
+            "description": "Items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredicateListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/predicates/{predicate_id}": {
+      "get": {
+        "tags": [
+          "Predicates"
+        ],
+        "summary": "Get Predicate",
+        "description": "Get detailed information about a specific predicate.\n\nReturns the full predicate definition including its formal statement,\nnormative source, and linked PCUs.",
+        "operationId": "get_predicate_v1_predicates__predicate_id__get",
+        "parameters": [
+          {
+            "name": "predicate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Predicate Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredicateDefinition"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/predicates/{predicate_id}/pcus": {
+      "get": {
+        "tags": [
+          "Predicates"
+        ],
+        "summary": "Get Predicate Pcus",
+        "description": "Get the PCUs that evaluate a specific predicate.\n\nEvery predicate must have at least one PCU (total mapping invariant).\nThis endpoint shows which PCUs are responsible for evaluating\nthe predicate.",
+        "operationId": "get_predicate_pcus_v1_predicates__predicate_id__pcus_get",
+        "parameters": [
+          {
+            "name": "predicate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Predicate Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredicatePCUMapping"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/predicates/by-framework/{framework}": {
+      "get": {
+        "tags": [
+          "Predicates"
+        ],
+        "summary": "Get Predicates By Framework",
+        "description": "Get all predicates for a specific regulatory framework.\n\nFrameworks include: gdpr, eu_ai_act, safety, nist_ai_rmf, etc.",
+        "operationId": "get_predicates_by_framework_v1_predicates_by_framework__framework__get",
+        "parameters": [
+          {
+            "name": "framework",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Framework"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredicateListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/predicates/by-gate/{gate_id}": {
+      "get": {
+        "tags": [
+          "Predicates"
+        ],
+        "summary": "Get Predicates By Gate",
+        "description": "Get all predicates evaluated by a specific gate.\n\nEach gate evaluates predicates within its domain\n(e.g., G2 evaluates safety predicates).",
+        "operationId": "get_predicates_by_gate_v1_predicates_by_gate__gate_id__get",
+        "parameters": [
+          {
+            "name": "gate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Gate Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredicateListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gates": {
+      "get": {
+        "tags": [
+          "Gates"
+        ],
+        "summary": "List Gates",
+        "description": "List all 17 AEGIS gates with metadata.\n\nGates are returned in evaluation order (G1 first, G17 last).\nEach gate represents a decision point in the AEGIS Control Plane.",
+        "operationId": "list_gates_v1_gates_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gates/{gate_id}": {
+      "get": {
+        "tags": [
+          "Gates"
+        ],
+        "summary": "Get Gate",
+        "description": "Get detailed information about a specific gate.\n\nReturns the full gate definition including all predicates\nand PCUs assigned to this gate.",
+        "operationId": "get_gate_v1_gates__gate_id__get",
+        "parameters": [
+          {
+            "name": "gate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Gate Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateDefinition"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gates/{gate_id}/coverage": {
+      "get": {
+        "tags": [
+          "Gates"
+        ],
+        "summary": "Get Gate Coverage",
+        "description": "Get PCU coverage information for a gate.\n\nShows which predicates have PCU implementations and\nidentifies any gaps in coverage.",
+        "operationId": "get_gate_coverage_v1_gates__gate_id__coverage_get",
+        "parameters": [
+          {
+            "name": "gate_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Gate Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateCoverage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gates/by-domain/{domain}": {
+      "get": {
+        "tags": [
+          "Gates"
+        ],
+        "summary": "Get Gates By Domain",
+        "description": "Get all gates for a specific domain.\n\nDomains include: legal, safety, data_governance, fairness,\noversight, capability, termination, etc.",
+        "operationId": "get_gates_by_domain_v1_gates_by_domain__domain__get",
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/gates/by-category/{category}": {
+      "get": {
+        "tags": [
+          "Gates"
+        ],
+        "summary": "Get Gates By Category",
+        "description": "Get all gates for a specific category.\n\nCategories: compliance, agency, system, lifecycle.",
+        "operationId": "get_gates_by_category_v1_gates_by_category__category__get",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GateListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evidence": {
+      "post": {
+        "tags": [
+          "Evidence"
+        ],
+        "summary": "Submit Evidence",
+        "description": "Submit an evidence bundle for use in subsequent evaluations.\n\nEvidence bundles are stored and can be referenced by bundle_id\nin certification requests. Bundles expire after 24 hours by default.",
+        "operationId": "submit_evidence_v1_evidence_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvidenceBundleSubmit"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceReceipt"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evidence/{bundle_id}": {
+      "get": {
+        "tags": [
+          "Evidence"
+        ],
+        "summary": "Get Evidence Bundle",
+        "description": "Retrieve a previously submitted evidence bundle.",
+        "operationId": "get_evidence_bundle_v1_evidence__bundle_id__get",
+        "parameters": [
+          {
+            "name": "bundle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Bundle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Evidence Bundle V1 Evidence  Bundle Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Evidence"
+        ],
+        "summary": "Delete Evidence Bundle",
+        "description": "Delete an evidence bundle.",
+        "operationId": "delete_evidence_bundle_v1_evidence__bundle_id__delete",
+        "parameters": [
+          {
+            "name": "bundle_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Bundle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Delete Evidence Bundle V1 Evidence  Bundle Id  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evidence/requirements/{framework}": {
+      "get": {
+        "tags": [
+          "Evidence"
+        ],
+        "summary": "Get Evidence Requirements",
+        "description": "Query what evidence is required for a specific framework.\n\nReturns the list of required and optional evidence types\nneeded to evaluate predicates in the given framework.",
+        "operationId": "get_evidence_requirements_v1_evidence_requirements__framework__get",
+        "parameters": [
+          {
+            "name": "framework",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Framework"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceRequirements"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/evidence/validate": {
+      "post": {
+        "tags": [
+          "Evidence"
+        ],
+        "summary": "Validate Evidence",
+        "description": "Validate evidence completeness without running evaluation.\n\nChecks whether the submitted evidence bundle contains all\nrequired evidence types for the specified framework.",
+        "operationId": "validate_evidence_v1_evidence_validate_post",
+        "parameters": [
+          {
+            "name": "framework",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Framework"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvidenceBundleSubmit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceValidationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/registry/pcus": {
+      "get": {
+        "tags": [
+          "Registry"
+        ],
+        "summary": "List Pcus",
+        "description": "List all registered PCUs with optional filtering.\n\nPCUs are deterministic executables that evaluate predicates\nagainst evidence and return PASS/WARN/FAIL decisions.",
+        "operationId": "list_pcus_v1_registry_pcus_get",
+        "parameters": [
+          {
+            "name": "framework",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by framework",
+              "title": "Framework"
+            },
+            "description": "Filter by framework"
+          },
+          {
+            "name": "predicate_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by predicate",
+              "title": "Predicate Id"
+            },
+            "description": "Filter by predicate"
+          },
+          {
+            "name": "pcu_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by PCU type",
+              "title": "Pcu Type"
+            },
+            "description": "Filter by PCU type"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PCUListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/registry/pcus/{pcu_id}": {
+      "get": {
+        "tags": [
+          "Registry"
+        ],
+        "summary": "Get Pcu",
+        "description": "Get detailed information about a specific PCU.\n\nReturns the full PCU definition including evidence requirements,\nparameters, and predicate bindings.",
+        "operationId": "get_pcu_v1_registry_pcus__pcu_id__get",
+        "parameters": [
+          {
+            "name": "pcu_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Pcu Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PCUDefinition"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/registry/frameworks": {
+      "get": {
+        "tags": [
+          "Registry"
+        ],
+        "summary": "List Frameworks",
+        "description": "List all supported regulatory frameworks.\n\nFrameworks define collections of predicates and their PCU\nimplementations for specific regulatory requirements.",
+        "operationId": "list_frameworks_v1_registry_frameworks_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrameworkListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/registry/frameworks/{framework_id}": {
+      "get": {
+        "tags": [
+          "Registry"
+        ],
+        "summary": "Get Framework",
+        "description": "Get detailed information about a specific framework.",
+        "operationId": "get_framework_v1_registry_frameworks__framework_id__get",
+        "parameters": [
+          {
+            "name": "framework_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Framework Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FrameworkInfo"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/registry/completeness": {
+      "get": {
+        "tags": [
+          "Registry"
+        ],
+        "summary": "Validate Completeness",
+        "description": "Validate predicate->PCU completeness.\n\nThe total mapping invariant requires that every predicate\nhas at least one PCU. This endpoint verifies that constraint.",
+        "operationId": "validate_completeness_v1_registry_completeness_get",
+        "parameters": [
+          {
+            "name": "frameworks",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated framework IDs",
+              "title": "Frameworks"
+            },
+            "description": "Comma-separated framework IDs"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompletenessReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/registry/stats": {
+      "get": {
+        "tags": [
+          "Registry"
+        ],
+        "summary": "Get Registry Stats",
+        "description": "Get overall registry statistics.\n\nProvides a high-level overview of the registry including\ntotal counts and coverage percentage.",
+        "operationId": "get_registry_stats_v1_registry_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistryStats"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActionDecisionEnum": {
+        "type": "string",
+        "enum": [
+          "ALLOW",
+          "DENY",
+          "MODIFY"
+        ],
+        "title": "ActionDecisionEnum",
+        "description": "Action-level interception decision."
+      },
+      "Artifact": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier for the AI artifact"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Artifact type: agentic_system, llm, ml_model, etc."
+          },
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "description": "Semantic version",
+            "default": "0.0.0"
+          },
+          "capabilities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Capabilities",
+            "description": "Declared capabilities"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type"
+        ],
+        "title": "Artifact",
+        "description": "The AI system under evaluation."
+      },
+      "BatchPredicateRequest": {
+        "properties": {
+          "predicate_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Predicate Ids"
+          },
+          "artifact": {
+            "$ref": "#/components/schemas/Artifact"
+          },
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "predicate_ids",
+          "artifact"
+        ],
+        "title": "BatchPredicateRequest",
+        "description": "Request to evaluate multiple predicates."
+      },
+      "BatchPredicateResponse": {
+        "properties": {
+          "results": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PredicateResult"
+            },
+            "type": "object",
+            "title": "Results"
+          },
+          "trace_id": {
+            "type": "string",
+            "title": "Trace Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "results",
+          "trace_id"
+        ],
+        "title": "BatchPredicateResponse",
+        "description": "Response for batch predicate evaluation."
+      },
+      "CAIBadge": {
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id"
+          },
+          "cai_level": {
+            "$ref": "#/components/schemas/CAILevel"
+          },
+          "cai_score": {
+            "type": "number",
+            "title": "Cai Score"
+          },
+          "badge_id": {
+            "type": "string",
+            "title": "Badge Id"
+          },
+          "issued_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Issued At"
+          },
+          "valid_until": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Valid Until"
+          },
+          "verification_url": {
+            "type": "string",
+            "title": "Verification Url"
+          },
+          "svg": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Svg"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "cai_level",
+          "cai_score",
+          "badge_id",
+          "issued_at",
+          "valid_until",
+          "verification_url"
+        ],
+        "title": "CAIBadge",
+        "description": "Trust badge representation for marketplace display."
+      },
+      "CAIBadgeFormat": {
+        "type": "string",
+        "enum": [
+          "json",
+          "svg",
+          "markdown"
+        ],
+        "title": "CAIBadgeFormat",
+        "description": "Badge output format."
+      },
+      "CAIBreakdown": {
+        "properties": {
+          "safety": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Safety",
+            "description": "G2 Safety score",
+            "default": 0.0
+          },
+          "data_governance": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Data Governance",
+            "description": "G3 Data Governance score",
+            "default": 0.0
+          },
+          "risk_management": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Risk Management",
+            "description": "G4 Risk Management score",
+            "default": 0.0
+          },
+          "fairness": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Fairness",
+            "description": "G5 Fairness score",
+            "default": 0.0
+          },
+          "audit_evidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Audit Evidence",
+            "description": "G6 Audit Evidence score",
+            "default": 0.0
+          },
+          "human_oversight": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Human Oversight",
+            "description": "G7 Human Oversight score",
+            "default": 0.0
+          },
+          "continuous_monitoring": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Continuous Monitoring",
+            "description": "G8 Monitoring score",
+            "default": 0.0
+          },
+          "objective_integrity": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Objective Integrity",
+            "description": "G10 Objective Integrity score",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "title": "CAIBreakdown",
+        "description": "Breakdown of CAI by regulatory domain."
+      },
+      "CAICertificate": {
+        "properties": {
+          "certificate_id": {
+            "type": "string",
+            "title": "Certificate Id"
+          },
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id"
+          },
+          "artifact_version": {
+            "type": "string",
+            "title": "Artifact Version"
+          },
+          "cai_level": {
+            "$ref": "#/components/schemas/CAILevel"
+          },
+          "cai_score": {
+            "type": "number",
+            "title": "Cai Score"
+          },
+          "assurance_rank": {
+            "type": "number",
+            "title": "Assurance Rank"
+          },
+          "frameworks_evaluated": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Frameworks Evaluated"
+          },
+          "gates_evaluated": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Gates Evaluated"
+          },
+          "issued_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Issued At"
+          },
+          "valid_until": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Valid Until"
+          },
+          "issuer": {
+            "type": "string",
+            "title": "Issuer",
+            "default": "AEGIS Certify"
+          },
+          "signature": {
+            "type": "string",
+            "title": "Signature"
+          },
+          "verification_url": {
+            "type": "string",
+            "title": "Verification Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "certificate_id",
+          "artifact_id",
+          "artifact_version",
+          "cai_level",
+          "cai_score",
+          "assurance_rank",
+          "frameworks_evaluated",
+          "gates_evaluated",
+          "issued_at",
+          "valid_until",
+          "signature",
+          "verification_url"
+        ],
+        "title": "CAICertificate",
+        "description": "Certification attestation for regulatory purposes."
+      },
+      "CAIComputeRequest": {
+        "properties": {
+          "artifact": {
+            "$ref": "#/components/schemas/Artifact"
+          },
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "frameworks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Frameworks",
+            "description": "Regulatory frameworks: gdpr, eu_ai_act, nist_ai_rmf, etc."
+          },
+          "include_breakdown": {
+            "type": "boolean",
+            "title": "Include Breakdown",
+            "description": "Include per-gate breakdown in response",
+            "default": true
+          },
+          "validity_hours": {
+            "type": "integer",
+            "maximum": 168.0,
+            "minimum": 1.0,
+            "title": "Validity Hours",
+            "description": "Hours until CAI score expires (1-168)",
+            "default": 24
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact"
+        ],
+        "title": "CAIComputeRequest",
+        "description": "Request to compute CAI for an artifact."
+      },
+      "CAIComputeResponse": {
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id"
+          },
+          "cai_score": {
+            "type": "number",
+            "title": "Cai Score"
+          },
+          "cai_level": {
+            "$ref": "#/components/schemas/CAILevel"
+          },
+          "assurance_rank": {
+            "type": "number",
+            "title": "Assurance Rank"
+          },
+          "breakdown": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CAIBreakdown"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/CAIDimension"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          },
+          "gates_passed": {
+            "type": "integer",
+            "title": "Gates Passed"
+          },
+          "gates_warned": {
+            "type": "integer",
+            "title": "Gates Warned"
+          },
+          "gates_failed": {
+            "type": "integer",
+            "title": "Gates Failed"
+          },
+          "certification_eligible": {
+            "type": "boolean",
+            "title": "Certification Eligible"
+          },
+          "trace_id": {
+            "type": "string",
+            "title": "Trace Id"
+          },
+          "computed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Computed At"
+          },
+          "valid_until": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Valid Until"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "cai_score",
+          "cai_level",
+          "assurance_rank",
+          "gates_passed",
+          "gates_warned",
+          "gates_failed",
+          "certification_eligible",
+          "trace_id",
+          "computed_at",
+          "valid_until"
+        ],
+        "title": "CAIComputeResponse",
+        "description": "Response from CAI computation."
+      },
+      "CAIDimension": {
+        "properties": {
+          "dimension_id": {
+            "type": "string",
+            "title": "Dimension Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "score": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Score",
+            "description": "Normalized score 0-1"
+          },
+          "weight": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Weight",
+            "description": "Weight in composite calculation"
+          },
+          "gate_id": {
+            "type": "string",
+            "title": "Gate Id"
+          },
+          "pcu_count": {
+            "type": "integer",
+            "title": "Pcu Count",
+            "default": 0
+          },
+          "passed_pcus": {
+            "type": "integer",
+            "title": "Passed Pcus",
+            "default": 0
+          },
+          "warned_pcus": {
+            "type": "integer",
+            "title": "Warned Pcus",
+            "default": 0
+          },
+          "failed_pcus": {
+            "type": "integer",
+            "title": "Failed Pcus",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "dimension_id",
+          "name",
+          "score",
+          "weight",
+          "gate_id"
+        ],
+        "title": "CAIDimension",
+        "description": "Individual dimension of the CAI score."
+      },
+      "CAIHistory": {
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id"
+          },
+          "cai_score": {
+            "type": "number",
+            "title": "Cai Score"
+          },
+          "cai_level": {
+            "$ref": "#/components/schemas/CAILevel"
+          },
+          "computed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Computed At"
+          },
+          "certification_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Certification Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "cai_score",
+          "cai_level",
+          "computed_at"
+        ],
+        "title": "CAIHistory",
+        "description": "Historical CAI score entry."
+      },
+      "CAIHistoryResponse": {
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/CAIHistory"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "trend": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CAITrend"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "history",
+          "total"
+        ],
+        "title": "CAIHistoryResponse",
+        "description": "Response with CAI history for an artifact."
+      },
+      "CAILevel": {
+        "type": "string",
+        "enum": [
+          "platinum",
+          "gold",
+          "silver",
+          "bronze",
+          "uncertified"
+        ],
+        "title": "CAILevel",
+        "description": "CAI certification level based on AssuranceRank."
+      },
+      "CAILevelDefinition": {
+        "properties": {
+          "level": {
+            "$ref": "#/components/schemas/CAILevel"
+          },
+          "min_score": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Min Score"
+          },
+          "max_score": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Max Score"
+          },
+          "min_assurance_rank": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Min Assurance Rank"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "requirements": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Requirements"
+          },
+          "benefits": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Benefits"
+          }
+        },
+        "type": "object",
+        "required": [
+          "level",
+          "min_score",
+          "max_score",
+          "min_assurance_rank",
+          "description"
+        ],
+        "title": "CAILevelDefinition",
+        "description": "Definition of a CAI level threshold."
+      },
+      "CAILevelsResponse": {
+        "properties": {
+          "levels": {
+            "items": {
+              "$ref": "#/components/schemas/CAILevelDefinition"
+            },
+            "type": "array",
+            "title": "Levels"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "levels",
+          "total"
+        ],
+        "title": "CAILevelsResponse",
+        "description": "Response listing all CAI level definitions."
+      },
+      "CAIResult": {
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id"
+          },
+          "cai_score": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Cai Score",
+            "description": "CAI score 0-100"
+          },
+          "cai_level": {
+            "$ref": "#/components/schemas/CAILevel"
+          },
+          "assurance_rank": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Assurance Rank",
+            "description": "Raw AssuranceRank 0-1"
+          },
+          "breakdown": {
+            "$ref": "#/components/schemas/CAIBreakdown"
+          },
+          "dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/CAIDimension"
+            },
+            "type": "array",
+            "title": "Dimensions"
+          },
+          "frameworks_evaluated": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Frameworks Evaluated"
+          },
+          "gates_passed": {
+            "type": "integer",
+            "title": "Gates Passed",
+            "default": 0
+          },
+          "gates_warned": {
+            "type": "integer",
+            "title": "Gates Warned",
+            "default": 0
+          },
+          "gates_failed": {
+            "type": "integer",
+            "title": "Gates Failed",
+            "default": 0
+          },
+          "certification_eligible": {
+            "type": "boolean",
+            "title": "Certification Eligible",
+            "default": false
+          },
+          "trace_id": {
+            "type": "string",
+            "title": "Trace Id",
+            "default": ""
+          },
+          "computed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Computed At"
+          },
+          "valid_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Until"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "cai_score",
+          "cai_level",
+          "assurance_rank"
+        ],
+        "title": "CAIResult",
+        "description": "Composite Assurance Index computation result.\n\nCAI is derived from the AssuranceRank (matroid basis cardinality)\nnormalized to a 0-100 scale for human readability."
+      },
+      "CAITrend": {
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id"
+          },
+          "current_score": {
+            "type": "number",
+            "title": "Current Score"
+          },
+          "previous_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Score"
+          },
+          "change": {
+            "type": "number",
+            "title": "Change",
+            "default": 0.0
+          },
+          "change_percentage": {
+            "type": "number",
+            "title": "Change Percentage",
+            "default": 0.0
+          },
+          "trend": {
+            "type": "string",
+            "enum": [
+              "improving",
+              "stable",
+              "declining"
+            ],
+            "title": "Trend",
+            "default": "stable"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/CAIHistory"
+            },
+            "type": "array",
+            "title": "History"
+          },
+          "period_days": {
+            "type": "integer",
+            "title": "Period Days",
+            "default": 30
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "current_score"
+        ],
+        "title": "CAITrend",
+        "description": "CAI trend analysis over time."
+      },
+      "CertifyOptions": {
+        "properties": {
+          "include_trace": {
+            "type": "boolean",
+            "title": "Include Trace",
+            "default": false
+          },
+          "include_explanation": {
+            "type": "boolean",
+            "title": "Include Explanation",
+            "default": true
+          },
+          "fail_fast": {
+            "type": "boolean",
+            "title": "Fail Fast",
+            "default": false
+          },
+          "gate_filter": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Gate Filter"
+          }
+        },
+        "type": "object",
+        "title": "CertifyOptions",
+        "description": "Options for a certification request."
+      },
+      "CertifyRequest": {
+        "properties": {
+          "artifact": {
+            "$ref": "#/components/schemas/Artifact"
+          },
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "frameworks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Frameworks",
+            "description": "Regulatory frameworks: gdpr, eu_ai_act, etc."
+          },
+          "options": {
+            "$ref": "#/components/schemas/CertifyOptions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact"
+        ],
+        "title": "CertifyRequest",
+        "description": "Request for full certification."
+      },
+      "CertifyResponse": {
+        "properties": {
+          "certification_id": {
+            "type": "string",
+            "title": "Certification Id"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/Decision"
+          },
+          "failed_gates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Failed Gates"
+          },
+          "warned_gates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warned Gates"
+          },
+          "gate_results": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GateResult"
+            },
+            "type": "object",
+            "title": "Gate Results"
+          },
+          "trace_id": {
+            "type": "string",
+            "title": "Trace Id"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "certification_id",
+          "decision",
+          "failed_gates",
+          "warned_gates",
+          "gate_results",
+          "trace_id",
+          "explanation"
+        ],
+        "title": "CertifyResponse",
+        "description": "Certification response."
+      },
+      "CompletenessReport": {
+        "properties": {
+          "is_complete": {
+            "type": "boolean",
+            "title": "Is Complete"
+          },
+          "total_predicates": {
+            "type": "integer",
+            "title": "Total Predicates"
+          },
+          "covered_predicates": {
+            "type": "integer",
+            "title": "Covered Predicates"
+          },
+          "uncovered_predicate_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Uncovered Predicate Ids"
+          },
+          "coverage_map": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Coverage Map",
+            "description": "predicate_id \u2192 list of pcu_ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "is_complete",
+          "total_predicates",
+          "covered_predicates"
+        ],
+        "title": "CompletenessReport",
+        "description": "Predicate\u2192PCU completeness validation report."
+      },
+      "Context": {
+        "properties": {
+          "jurisdiction": {
+            "type": "string",
+            "title": "Jurisdiction",
+            "description": "Legal jurisdiction: EU, US, UK, etc.",
+            "default": "global"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain",
+            "description": "Application domain: healthcare, finance, etc.",
+            "default": "general"
+          },
+          "autonomy_level": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 0.0,
+            "title": "Autonomy Level",
+            "description": "Autonomy level A0-A5",
+            "default": 0
+          },
+          "interaction_mode": {
+            "type": "string",
+            "title": "Interaction Mode",
+            "description": "autonomous, supervised, advisory",
+            "default": "supervised"
+          },
+          "active_gates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Active Gates",
+            "description": "Gate filter (empty = all 17)"
+          },
+          "additional": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Additional"
+          }
+        },
+        "type": "object",
+        "title": "Context",
+        "description": "Evaluation context \u2014 determines applicable predicates and thresholds."
+      },
+      "Decision": {
+        "type": "string",
+        "enum": [
+          "HALT",
+          "THROTTLE",
+          "PERMIT"
+        ],
+        "title": "Decision",
+        "description": "Top-level enforcement decision from the AEGIS Control Plane."
+      },
+      "EnforcementAction": {
+        "type": "string",
+        "enum": [
+          "HALT",
+          "THROTTLE",
+          "HITL",
+          "DOWNGRADE",
+          "VETO",
+          "BLOCK",
+          "ADVISORY",
+          "INADMISSIBLE"
+        ],
+        "title": "EnforcementAction",
+        "description": "Enforcement action bound to a gate decision."
+      },
+      "EvaluateGateRequest": {
+        "properties": {
+          "gate_id": {
+            "type": "string",
+            "title": "Gate Id"
+          },
+          "artifact": {
+            "$ref": "#/components/schemas/Artifact"
+          },
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "frameworks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Frameworks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "gate_id",
+          "artifact"
+        ],
+        "title": "EvaluateGateRequest",
+        "description": "Request to evaluate a single gate."
+      },
+      "EvaluatePredicateRequest": {
+        "properties": {
+          "predicate_id": {
+            "type": "string",
+            "title": "Predicate Id"
+          },
+          "artifact": {
+            "$ref": "#/components/schemas/Artifact"
+          },
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "predicate_id",
+          "artifact"
+        ],
+        "title": "EvaluatePredicateRequest",
+        "description": "Request to evaluate a single predicate."
+      },
+      "EvidenceBundleSubmit": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceItemSubmit"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id",
+            "description": "Associated artifact ID",
+            "default": ""
+          },
+          "submitter": {
+            "type": "string",
+            "title": "Submitter",
+            "description": "Submitter identifier",
+            "default": "api"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "EvidenceBundleSubmit",
+        "description": "Bundle of evidence items for submission."
+      },
+      "EvidenceItemSubmit": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Evidence type: toxicity_scan, pii_scan, etc."
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Evidence source: perspective_api, presidio, etc."
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "description": "Evidence payload"
+          },
+          "trust_level": {
+            "type": "string",
+            "title": "Trust Level",
+            "description": "Trust level: high, medium, low",
+            "default": "medium"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "source",
+          "data"
+        ],
+        "title": "EvidenceItemSubmit",
+        "description": "Single evidence item for submission."
+      },
+      "EvidenceReceipt": {
+        "properties": {
+          "bundle_id": {
+            "type": "string",
+            "title": "Bundle Id"
+          },
+          "item_count": {
+            "type": "integer",
+            "title": "Item Count"
+          },
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submitted At"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bundle_id",
+          "item_count",
+          "submitted_at"
+        ],
+        "title": "EvidenceReceipt",
+        "description": "Receipt for submitted evidence bundle."
+      },
+      "EvidenceRequirements": {
+        "properties": {
+          "framework": {
+            "type": "string",
+            "title": "Framework"
+          },
+          "required_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required Types"
+          },
+          "optional_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Optional Types"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "framework",
+          "required_types",
+          "optional_types",
+          "description"
+        ],
+        "title": "EvidenceRequirements",
+        "description": "Evidence requirements for a framework."
+      },
+      "EvidenceSpec": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "trust_level": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Trust Level",
+            "default": "medium"
+          },
+          "required": {
+            "type": "boolean",
+            "title": "Required",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "source",
+          "type"
+        ],
+        "title": "EvidenceSpec",
+        "description": "Specification of evidence required by a PCU."
+      },
+      "EvidenceValidationResult": {
+        "properties": {
+          "is_valid": {
+            "type": "boolean",
+            "title": "Is Valid"
+          },
+          "missing_required": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Required"
+          },
+          "provided_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Provided Types"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "is_valid",
+          "missing_required",
+          "provided_types",
+          "warnings"
+        ],
+        "title": "EvidenceValidationResult",
+        "description": "Result of evidence validation."
+      },
+      "FrameworkInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "predicate_count": {
+            "type": "integer",
+            "title": "Predicate Count"
+          },
+          "pcu_count": {
+            "type": "integer",
+            "title": "Pcu Count"
+          },
+          "primary_gates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Primary Gates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "predicate_count",
+          "pcu_count",
+          "primary_gates"
+        ],
+        "title": "FrameworkInfo",
+        "description": "Metadata about a supported regulatory framework."
+      },
+      "FrameworkListResponse": {
+        "properties": {
+          "frameworks": {
+            "items": {
+              "$ref": "#/components/schemas/FrameworkInfo"
+            },
+            "type": "array",
+            "title": "Frameworks"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "frameworks",
+          "total"
+        ],
+        "title": "FrameworkListResponse",
+        "description": "Response for listing frameworks."
+      },
+      "GateCoverage": {
+        "properties": {
+          "gate_id": {
+            "type": "string",
+            "title": "Gate Id"
+          },
+          "predicate_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Predicate Ids"
+          },
+          "pcu_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pcu Ids"
+          },
+          "is_covered": {
+            "type": "boolean",
+            "title": "Is Covered"
+          },
+          "uncovered_predicates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Uncovered Predicates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "gate_id",
+          "predicate_ids",
+          "pcu_ids",
+          "is_covered",
+          "uncovered_predicates"
+        ],
+        "title": "GateCoverage",
+        "description": "PCU coverage for a gate."
+      },
+      "GateDefinition": {
+        "properties": {
+          "gate_id": {
+            "type": "string",
+            "title": "Gate Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "math_basis": {
+            "type": "string",
+            "title": "Math Basis"
+          },
+          "enforcement_type": {
+            "$ref": "#/components/schemas/EnforcementAction"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "predicate_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Predicate Ids"
+          },
+          "pcu_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pcu Ids"
+          },
+          "evaluation_order": {
+            "type": "integer",
+            "title": "Evaluation Order"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "gate_id",
+          "name",
+          "domain",
+          "math_basis",
+          "enforcement_type",
+          "category",
+          "evaluation_order"
+        ],
+        "title": "GateDefinition",
+        "description": "Metadata definition for an AEGIS gate."
+      },
+      "GateInfo": {
+        "properties": {
+          "gate_id": {
+            "type": "string",
+            "title": "Gate Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "enforcement_type": {
+            "$ref": "#/components/schemas/EnforcementAction"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "evaluation_order": {
+            "type": "integer",
+            "title": "Evaluation Order"
+          },
+          "predicate_count": {
+            "type": "integer",
+            "title": "Predicate Count"
+          },
+          "pcu_count": {
+            "type": "integer",
+            "title": "Pcu Count"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "gate_id",
+          "name",
+          "domain",
+          "enforcement_type",
+          "category",
+          "evaluation_order",
+          "predicate_count",
+          "pcu_count",
+          "description"
+        ],
+        "title": "GateInfo",
+        "description": "Gate information for API response."
+      },
+      "GateListResponse": {
+        "properties": {
+          "gates": {
+            "items": {
+              "$ref": "#/components/schemas/GateInfo"
+            },
+            "type": "array",
+            "title": "Gates"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "gates",
+          "total"
+        ],
+        "title": "GateListResponse",
+        "description": "Response for listing all gates."
+      },
+      "GateResult": {
+        "properties": {
+          "gate_id": {
+            "type": "string",
+            "title": "Gate Id"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/PCUDecisionEnum"
+          },
+          "enforcement_action": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EnforcementAction"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pcu_results": {
+            "items": {
+              "$ref": "#/components/schemas/PCUResult"
+            },
+            "type": "array",
+            "title": "Pcu Results"
+          },
+          "failed_predicate_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Failed Predicate Ids"
+          },
+          "warned_predicate_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warned Predicate Ids"
+          },
+          "trace_id": {
+            "type": "string",
+            "title": "Trace Id",
+            "default": ""
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "diagnostic": {
+            "type": "string",
+            "title": "Diagnostic",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "gate_id",
+          "domain",
+          "decision"
+        ],
+        "title": "GateResult",
+        "description": "Result of evaluating a single gate.\n\nGate evaluation follows FAIL-dominant lattice semantics:\n  if any PCU == FAIL \u2192 Gate = FAIL\n  else if any PCU == WARN \u2192 Gate = WARN\n  else \u2192 Gate = PASS"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "degraded",
+              "unhealthy"
+            ],
+            "title": "Status"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "components": {
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "up",
+                "down"
+              ]
+            },
+            "type": "object",
+            "title": "Components"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "timestamp",
+          "version",
+          "components"
+        ],
+        "title": "HealthResponse",
+        "description": "Health check response."
+      },
+      "InterceptActionOptions": {
+        "properties": {
+          "fail_fast": {
+            "type": "boolean",
+            "title": "Fail Fast",
+            "default": true
+          },
+          "gate_filter": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Gate Filter"
+          }
+        },
+        "type": "object",
+        "title": "InterceptActionOptions",
+        "description": "Options for intercept-action requests."
+      },
+      "InterceptActionRequest": {
+        "properties": {
+          "artifact": {
+            "$ref": "#/components/schemas/Artifact"
+          },
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          },
+          "action": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Action"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "frameworks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Frameworks"
+          },
+          "options": {
+            "$ref": "#/components/schemas/InterceptActionOptions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact",
+          "action"
+        ],
+        "title": "InterceptActionRequest",
+        "description": "Request payload for unit action interception."
+      },
+      "InterceptActionResponse": {
+        "properties": {
+          "decision": {
+            "$ref": "#/components/schemas/ActionDecisionEnum"
+          },
+          "failed_gates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Failed Gates"
+          },
+          "warned_gates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warned Gates"
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reason Codes"
+          },
+          "gate_results": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GateResult"
+            },
+            "type": "object",
+            "title": "Gate Results"
+          },
+          "trace_id": {
+            "type": "string",
+            "title": "Trace Id"
+          },
+          "diagnostic": {
+            "type": "string",
+            "title": "Diagnostic"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision",
+          "failed_gates",
+          "warned_gates",
+          "reason_codes",
+          "gate_results",
+          "trace_id",
+          "diagnostic"
+        ],
+        "title": "InterceptActionResponse",
+        "description": "Response payload for unit action interception."
+      },
+      "MarketplaceValidationRequest": {
+        "properties": {
+          "artifact": {
+            "$ref": "#/components/schemas/Artifact"
+          },
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          },
+          "evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "minimum_level": {
+            "$ref": "#/components/schemas/CAILevel",
+            "description": "Minimum CAI level required for listing",
+            "default": "bronze"
+          },
+          "required_frameworks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required Frameworks",
+            "description": "Frameworks that must be evaluated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact"
+        ],
+        "title": "MarketplaceValidationRequest",
+        "description": "Request to validate artifact for marketplace listing."
+      },
+      "MarketplaceValidationResponse": {
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "title": "Artifact Id"
+          },
+          "eligible": {
+            "type": "boolean",
+            "title": "Eligible"
+          },
+          "cai_level": {
+            "$ref": "#/components/schemas/CAILevel"
+          },
+          "cai_score": {
+            "type": "number",
+            "title": "Cai Score"
+          },
+          "minimum_required": {
+            "$ref": "#/components/schemas/CAILevel"
+          },
+          "missing_requirements": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Requirements"
+          },
+          "failed_gates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Failed Gates"
+          },
+          "recommendations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          },
+          "trace_id": {
+            "type": "string",
+            "title": "Trace Id"
+          },
+          "validated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Validated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "eligible",
+          "cai_level",
+          "cai_score",
+          "minimum_required",
+          "trace_id",
+          "validated_at"
+        ],
+        "title": "MarketplaceValidationResponse",
+        "description": "Response from marketplace validation."
+      },
+      "PCUDecisionEnum": {
+        "type": "string",
+        "enum": [
+          "PASS",
+          "WARN",
+          "FAIL"
+        ],
+        "title": "PCUDecisionEnum",
+        "description": "Individual PCU evaluation outcome."
+      },
+      "PCUDefinition": {
+        "properties": {
+          "pcu_id": {
+            "type": "string",
+            "title": "Pcu Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "evaluates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evaluates"
+          },
+          "evidence_inputs": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceSpec"
+            },
+            "type": "array",
+            "title": "Evidence Inputs"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Parameters"
+          },
+          "framework": {
+            "type": "string",
+            "title": "Framework"
+          },
+          "pcu_type": {
+            "$ref": "#/components/schemas/PCUType",
+            "default": "deterministic"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "pcu_id",
+          "name",
+          "version",
+          "evaluates",
+          "evidence_inputs",
+          "framework"
+        ],
+        "title": "PCUDefinition",
+        "description": "Metadata definition for a registered PCU."
+      },
+      "PCUInfo": {
+        "properties": {
+          "pcu_id": {
+            "type": "string",
+            "title": "Pcu Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "framework": {
+            "type": "string",
+            "title": "Framework"
+          },
+          "pcu_type": {
+            "$ref": "#/components/schemas/PCUType"
+          },
+          "evaluates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evaluates"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pcu_id",
+          "name",
+          "version",
+          "framework",
+          "pcu_type",
+          "evaluates",
+          "description"
+        ],
+        "title": "PCUInfo",
+        "description": "PCU information for API response."
+      },
+      "PCUListResponse": {
+        "properties": {
+          "pcus": {
+            "items": {
+              "$ref": "#/components/schemas/PCUInfo"
+            },
+            "type": "array",
+            "title": "Pcus"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pcus",
+          "total",
+          "page",
+          "page_size"
+        ],
+        "title": "PCUListResponse",
+        "description": "Response for listing PCUs."
+      },
+      "PCUResult": {
+        "properties": {
+          "decision": {
+            "$ref": "#/components/schemas/PCUDecisionEnum"
+          },
+          "pcu_id": {
+            "type": "string",
+            "title": "Pcu Id"
+          },
+          "pcu_version": {
+            "type": "string",
+            "title": "Pcu Version",
+            "default": "0.0.0"
+          },
+          "predicate_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Predicate Ids"
+          },
+          "measurements": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Measurements"
+          },
+          "thresholds_used": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Thresholds Used"
+          },
+          "evidence_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Refs"
+          },
+          "trace_id": {
+            "type": "string",
+            "title": "Trace Id",
+            "default": ""
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "diagnostic": {
+            "type": "string",
+            "title": "Diagnostic",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision",
+          "pcu_id",
+          "predicate_ids"
+        ],
+        "title": "PCUResult",
+        "description": "Result of a single PCU evaluation.\n\nEvery PCU emits this structured result for traceability.\nNo PCU may emit a result without all required fields."
+      },
+      "PCUType": {
+        "type": "string",
+        "enum": [
+          "deterministic",
+          "ml_assisted",
+          "llm_assisted",
+          "external_api"
+        ],
+        "title": "PCUType",
+        "description": "PCU implementation type \u2014 determines automation category."
+      },
+      "PredicateCategory": {
+        "type": "string",
+        "enum": [
+          "legal",
+          "safety",
+          "data_governance",
+          "risk",
+          "fairness",
+          "audit",
+          "oversight",
+          "monitoring",
+          "capability",
+          "objective",
+          "assurance",
+          "composition",
+          "autonomy",
+          "tool",
+          "reversibility",
+          "context",
+          "termination"
+        ],
+        "title": "PredicateCategory",
+        "description": "Maps predicates to their assurance domain (gate)."
+      },
+      "PredicateDefinition": {
+        "properties": {
+          "predicate_id": {
+            "type": "string",
+            "title": "Predicate Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "formal_statement": {
+            "type": "string",
+            "title": "Formal Statement"
+          },
+          "normative_source": {
+            "type": "string",
+            "title": "Normative Source"
+          },
+          "framework": {
+            "type": "string",
+            "title": "Framework"
+          },
+          "gate_id": {
+            "type": "string",
+            "title": "Gate Id"
+          },
+          "pcu_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pcu Ids"
+          },
+          "evidence_types": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Types"
+          },
+          "category": {
+            "$ref": "#/components/schemas/PredicateCategory"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "predicate_id",
+          "name",
+          "formal_statement",
+          "normative_source",
+          "framework",
+          "gate_id",
+          "category"
+        ],
+        "title": "PredicateDefinition",
+        "description": "Metadata definition for a formal predicate."
+      },
+      "PredicateInfo": {
+        "properties": {
+          "predicate_id": {
+            "type": "string",
+            "title": "Predicate Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "formal_statement": {
+            "type": "string",
+            "title": "Formal Statement"
+          },
+          "framework": {
+            "type": "string",
+            "title": "Framework"
+          },
+          "gate_id": {
+            "type": "string",
+            "title": "Gate Id"
+          },
+          "category": {
+            "$ref": "#/components/schemas/PredicateCategory"
+          },
+          "pcu_count": {
+            "type": "integer",
+            "title": "Pcu Count"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "predicate_id",
+          "name",
+          "formal_statement",
+          "framework",
+          "gate_id",
+          "category",
+          "pcu_count",
+          "description"
+        ],
+        "title": "PredicateInfo",
+        "description": "Predicate information for API response."
+      },
+      "PredicateListResponse": {
+        "properties": {
+          "predicates": {
+            "items": {
+              "$ref": "#/components/schemas/PredicateInfo"
+            },
+            "type": "array",
+            "title": "Predicates"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          }
+        },
+        "type": "object",
+        "required": [
+          "predicates",
+          "total",
+          "page",
+          "page_size"
+        ],
+        "title": "PredicateListResponse",
+        "description": "Response for listing predicates."
+      },
+      "PredicatePCUMapping": {
+        "properties": {
+          "predicate_id": {
+            "type": "string",
+            "title": "Predicate Id"
+          },
+          "pcu_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pcu Ids"
+          },
+          "is_covered": {
+            "type": "boolean",
+            "title": "Is Covered"
+          }
+        },
+        "type": "object",
+        "required": [
+          "predicate_id",
+          "pcu_ids",
+          "is_covered"
+        ],
+        "title": "PredicatePCUMapping",
+        "description": "Mapping of predicate to its PCUs."
+      },
+      "PredicateResult": {
+        "properties": {
+          "predicate_id": {
+            "type": "string",
+            "title": "Predicate Id"
+          },
+          "satisfied": {
+            "type": "boolean",
+            "title": "Satisfied"
+          },
+          "pcu_results": {
+            "items": {
+              "$ref": "#/components/schemas/PCUResult"
+            },
+            "type": "array",
+            "title": "Pcu Results"
+          },
+          "trace_id": {
+            "type": "string",
+            "title": "Trace Id",
+            "default": ""
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "predicate_id",
+          "satisfied",
+          "pcu_results"
+        ],
+        "title": "PredicateResult",
+        "description": "Result of evaluating a predicate via its linked PCUs."
+      },
+      "ReadinessResponse": {
+        "properties": {
+          "ready": {
+            "type": "boolean",
+            "title": "Ready"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ready",
+          "timestamp"
+        ],
+        "title": "ReadinessResponse",
+        "description": "Readiness check response."
+      },
+      "RegistryStats": {
+        "properties": {
+          "total_predicates": {
+            "type": "integer",
+            "title": "Total Predicates"
+          },
+          "total_pcus": {
+            "type": "integer",
+            "title": "Total Pcus"
+          },
+          "total_gates": {
+            "type": "integer",
+            "title": "Total Gates"
+          },
+          "total_frameworks": {
+            "type": "integer",
+            "title": "Total Frameworks"
+          },
+          "coverage_percentage": {
+            "type": "number",
+            "title": "Coverage Percentage"
+          },
+          "uncovered_predicates": {
+            "type": "integer",
+            "title": "Uncovered Predicates"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_predicates",
+          "total_pcus",
+          "total_gates",
+          "total_frameworks",
+          "coverage_percentage",
+          "uncovered_predicates"
+        ],
+        "title": "RegistryStats",
+        "description": "Registry statistics."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
