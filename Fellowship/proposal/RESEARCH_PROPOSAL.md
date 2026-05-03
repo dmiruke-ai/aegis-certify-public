@@ -219,7 +219,7 @@ By treating AI safety as an execution-time control problem grounded in formal ma
 
 ---
 
-**Repository:** https://github.com/mirdattamir/aegis-certify-public
+**Repository:** https://github.com/dmiruke-ai/aegis-certify-public
 **Live API:** http://37.27.97.75:18000/docs#/
 **Theoretical Foundation:** AEGIS Algebra - A Unified Mathematical Framework (manuscript in preparation)
 **Contact:** Dattaram Miruke — dattamiruke@gmail.com

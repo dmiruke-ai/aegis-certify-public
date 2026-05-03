@@ -310,7 +310,7 @@ result = aegis_engine.certify(
   title={AEGIS Certify: Mathematical Framework for Executable Assurance},
   author={Dattaram Miruke},
   year={2026},
-  url={https://github.com/mirdattamir/aegis-certify-public},
+  url={https://github.com/dmiruke-ai/aegis-certify-public},
   note={Sprint 2 validation: 93\% improvement in jailbreak detection}
 }
 ```
