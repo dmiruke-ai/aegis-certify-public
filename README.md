@@ -23,15 +23,14 @@ No installation required. The API is live and ready to use:
 # Health check
 curl http://37.27.97.75:18000/health
 
-# Create an experiment
-curl -X POST http://37.27.97.75:18000/api/v1/experiments \
-  -H "Content-Type: application/json" \
-  -d '{"name": "jailbreak-eval", "description": "Jailbreak detection test"}'
+# List all research hypotheses (H1-H5)
+curl http://37.27.97.75:18000/api/v1/hypotheses
 
-# Run AEGIS certification
-curl -X POST http://37.27.97.75:18000/api/v1/certify \
-  -H "Content-Type: application/json" \
-  -d '{"artifact_id": "test-agent-001", "context": {"domain": "general"}}'
+# List all experiments
+curl http://37.27.97.75:18000/api/v1/experiments
+
+# List available metrics
+curl http://37.27.97.75:18000/api/v1/metrics/available
 ```
 
 Full interactive examples available at the Swagger UI above.
