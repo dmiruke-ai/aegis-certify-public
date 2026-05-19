@@ -745,7 +745,7 @@ redis-cli -h 37.27.97.75 -p 16379
 ├──────────────────────────────────────────────────────┤
 │  1. Network Isolation                                │
 │     - Dedicated Docker bridge network                │
-│     - No connections to InferLoop networks           │
+│     - No connections to external networks           │
 │     - Internal DNS resolution only                   │
 │                                                      │
 │  2. Database Isolation                               │
