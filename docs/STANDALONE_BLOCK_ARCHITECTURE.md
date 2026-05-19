@@ -7,7 +7,7 @@
 ```
 ┌────────────────────────────────────────────────────────────────────┐
 │                  AEGIS CERTIFY STANDALONE SYSTEM                   │
-│              Zero Dependencies on InferLoop Infrastructure         │
+│              Zero Dependencies on other AI Infrastructure         │
 └────────────────────────────────────────────────────────────────────┘
 ```
 
