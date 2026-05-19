@@ -328,7 +328,7 @@ All keys prefixed with `aegis:`
 # Check network
 docker network inspect docker_aegis-dev
 
-# Verify no connections to InferLoop networks
+# Verify no connections to external networks
 docker network ls | grep aegis
 # Should only show: docker_aegis-dev
 ```
