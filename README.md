@@ -1,3 +1,7 @@
+[![Portfolio](https://img.shields.io/badge/Portfolio-dmiruke.dev-6aa7ff?style=for-the-badge&logo=github)](https://dmiruke-ai.github.io/dmiruke.github.io/)
+[![Live API](https://img.shields.io/badge/Live%20API-Swagger%20UI-b48cff?style=for-the-badge)](http://37.27.97.75:18000/docs#/)
+[![Dashboard](https://img.shields.io/badge/Dashboard-AEGIS%20UI-5fc77a?style=for-the-badge)](http://37.27.97.75:3001/dashboard)
+
 # AEGIS Certify
 
 **Deterministic AI Compliance Assurance Library**
