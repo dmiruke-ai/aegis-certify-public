@@ -522,8 +522,8 @@ cd infra/scripts
 
 ### Contact
 
-- **GitHub:** [inferloop/aegis-certify](https://github.com/inferloop/aegis-certify)
-- **Email:** contact@inferloop.com
+- **GitHub:** [aegis-certify](https://github.com/dmiruke-ai/aegis-certify-public)
+- **Email:** dattamiruke@gmail.com
 - **Documentation:** [Full technical specs](docs/architecture/UNIFIED_ARCHITECTURE_DIAGRAM.md)
 - **Live Demo:** [Request access](https://inferloop.com/aegis-demo)
 
@@ -612,4 +612,4 @@ class TraceObject(BaseModel):
 
 **End of Presentation**
 
-*For questions or demo requests, contact: contact@inferloop.com*
+*For questions or demo requests, contact: dattamiruke@gmail.com*
