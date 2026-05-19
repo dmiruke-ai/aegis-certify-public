@@ -98,32 +98,7 @@ Full interactive examples available at the Swagger UI above.
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│               External Integrations                      │
-│       (OPA, Kubernetes, CI/CD, Policy Engines)           │
-└────────────────────────┬────────────────────────────────┘
-                         │
-┌────────────────────────▼────────────────────────────────┐
-│              AEGIS Public Interfaces                     │
-│       REST API │ gRPC │ Python SDK │ CLI                 │
-└────────────────────────┬────────────────────────────────┘
-                         │
-┌────────────────────────▼────────────────────────────────┐
-│               AEGIS Control Plane                        │
-│            Gates G1–G17 (authoritative)                  │
-└────────────────────────┬────────────────────────────────┘
-                         │
-┌────────────────────────▼────────────────────────────────┐
-│             AEGIS Assurance Kernel                       │
-│     Predicates │ PCUs │ Lattice │ Matroid Logic          │
-└────────────────────────┬────────────────────────────────┘
-                         │
-┌────────────────────────▼────────────────────────────────┐
-│            Evidence & Registry Layer                     │
-│    PCU Registry │ Evidence Store │ Trace Log             │
-└─────────────────────────────────────────────────────────┘
-```
+![AEGIS Architecture](docs/architecture.svg)
 
 ## Quick Start
 
