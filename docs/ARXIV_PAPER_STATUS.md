@@ -1,5 +1,3 @@
-> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
-
 # AEGIS arXiv Paper Status
 
 **Date:** 2026-04-25
@@ -295,19 +293,19 @@ mkdir -p /home/damir/PORTFOLIO/aegis-paper/paper/sections
 # Create main LaTeX file
 cat > /home/damir/PORTFOLIO/aegis-paper/paper/main.tex <<'EOF'
 \documentclass{article}
- sepackage{arxiv}
- sepackage{hyperref}
+\usepackage{arxiv}
+\usepackage{hyperref}
 
-	itle{AEGIS: A Deterministic Framework for AI Compliance Assurance}
-uthor{Damir Mirdita}
-\date{	oday}
+\title{AEGIS: A Deterministic Framework for AI Compliance Assurance}
+\author{Damir Mirdita}
+\date{\today}
 
-egin{document}
+\begin{document}
 \maketitle
 
-egin{abstract}
+\begin{abstract}
 [Abstract goes here]
-nd{abstract}
+\end{abstract}
 
 \section{Introduction}
 [Introduction goes here]
@@ -327,10 +325,10 @@ cat > /home/damir/PORTFOLIO/aegis-paper/paper/main.tex <<'EOF'
 \section{Conclusion}
 [Conclusion goes here]
 
-ibliography{bibliography}
-ibliographystyle{plain}
+\bibliography{bibliography}
+\bibliographystyle{plain}
 
-nd{document}
+\end{document}
 EOF
 
 # Create bibliography
