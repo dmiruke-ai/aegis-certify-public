@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # Executive Summary: AEGIS Algebra for Agentic AI Safety
 
 ## The Problem: The Frontier Safety Gap

@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # Technical Appendix: AEGIS Implementation Details
 
 ## A. Mathematical Foundations

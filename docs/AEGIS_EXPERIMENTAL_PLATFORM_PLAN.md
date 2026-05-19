@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # AEGIS Experimental Evaluation Platform — Implementation Plan
 
 **Version:** 1.0
@@ -955,14 +957,14 @@ OUTPUT:
 1. **LaTeX Table Export** (`exporters/latex_exporter.py`)
    - [ ] Generate comparison table:
      ```latex
-     \begin{table}
-     \begin{tabular}{l|ccc}
-     System & ASR & Hallucination & Task Success \\
+     egin{table}
+     egin{tabular}{l|ccc}
+     System & ASR & Hallucination & Task Success \
      \hline
-     Baseline & 45.2\% & 12.3\% & 87.5\% \\
-     AEGIS & 8.1\% & 5.2\% & 84.3\% \\
-     \end{tabular}
-     \end{table}
+     Baseline & 45.2\% & 12.3\% & 87.5\% \
+     AEGIS & 8.1\% & 5.2\% & 84.3\% \
+     nd{tabular}
+     nd{table}
      ```
    - [ ] Generate gate failure table
    - [ ] API: `GET /api/v1/export/table?experiment_id=xxx&format=latex`

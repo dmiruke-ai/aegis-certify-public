@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # AEGIS Experimental Platform - API Usage Guide
 
 ## Quick Start: Execute Experiments via Swagger UI

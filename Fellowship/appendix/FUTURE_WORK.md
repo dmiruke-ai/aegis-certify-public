@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # Future Work: Sprints 3-7 Roadmap
 
 ## Overview

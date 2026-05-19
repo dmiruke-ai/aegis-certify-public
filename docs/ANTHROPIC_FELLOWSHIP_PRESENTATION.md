@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # AEGIS Certify — Anthropic Fellowship Presentation
 
 **Project:** AEGIS Certify — Deterministic AI Compliance Assurance Library

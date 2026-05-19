@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # CLI Architecture Guide — Where Does the CLI Go?
 
 **Version:** 1.0

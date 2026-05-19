@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # AEGIS API Testing - Quick Start Guide
 
 This directory contains comprehensive API testing resources for the AEGIS Experimental Platform.
@@ -171,7 +173,8 @@ Follow Section 8 in `CURL_TEST_SUITE.md` - "Complete Workflow Example"
 ### Latency Test (100 requests)
 ```bash
 for i in {1..100}; do
-  curl -s -w "Time: %{time_total}s\n" \
+  curl -s -w "Time: %{time_total}s
+" \
     -X POST "http://37.27.97.75:18000/api/v1/certify" \
     -H "Content-Type: application/json" \
     -d "{\"artifact_id\": \"perf-$i\", \"artifact_content\": \"test $i\"}" \

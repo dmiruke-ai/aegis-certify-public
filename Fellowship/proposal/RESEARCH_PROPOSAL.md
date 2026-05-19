@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # Research Proposal: AEGIS Algebra - Mathematical Framework for Executable Assurance of Agentic AI
 
 **OpenAI Safety Fellowship Application**

@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # AEGIS Certify
 
 ## Deterministic AI Compliance Assurance Infrastructure

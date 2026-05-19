@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 [![Live API](https://img.shields.io/badge/Live%20API-Swagger%20UI-b48cff?style=for-the-badge)](http://37.27.97.75:18000/docs#/)
 [![Dashboard](https://img.shields.io/badge/Dashboard-AEGIS%20UI-5fc77a?style=for-the-badge)](http://37.27.97.75:3001/dashboard)
 

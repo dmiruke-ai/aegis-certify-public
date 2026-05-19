@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # AEGIS Certify - Sprint Roadmap
 **Last Updated:** 2026-04-27
 **Current Status:** Real SDK Integrated, Pilot Validation Complete (H1/H2 validated on 6 cases)

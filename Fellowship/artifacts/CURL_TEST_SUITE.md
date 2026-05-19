@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # AEGIS API - Complete curl Test Suite
 
 **Base URL:** `http://37.27.97.75:18000`
@@ -1151,7 +1153,8 @@ curl -X POST "http://37.27.97.75:18000/api/v1/certify" \
 ```bash
 # Test 100 sequential calls
 for i in {1..100}; do
-  curl -s -w "Time: %{time_total}s\n" \
+  curl -s -w "Time: %{time_total}s
+" \
     -X POST "http://37.27.97.75:18000/api/v1/certify" \
     -H "Content-Type: application/json" \
     -d "{

@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # Demo Artifacts: Key Metrics Visualization
 
 ## Executive Dashboard

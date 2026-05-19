@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # OpenAI Fellowship Application - AEGIS Certify
 
 **Applicant:** Dattaram Miruke

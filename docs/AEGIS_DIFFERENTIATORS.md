@@ -1,3 +1,5 @@
+> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
+
 # AEGIS Differentiators: Beyond Evaluation
 
 **Why AEGIS is Governance Infrastructure, Not Another Evaluator**
