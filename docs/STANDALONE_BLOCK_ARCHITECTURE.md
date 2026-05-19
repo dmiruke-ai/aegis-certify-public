@@ -664,7 +664,7 @@ Docker Compose: v2
 
 ### Production Deployment (K3s - Optional)
 ```
-Cluster: K3s on inferloop2
+Cluster: K3s on server2
 Namespace: aegis-sandbox
 
 ├── StatefulSet: PostgreSQL (1 replica, PVC)
