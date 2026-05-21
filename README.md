@@ -1,7 +1,7 @@
 > **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
 
-[![Live API](https://img.shields.io/badge/Live%20API-Swagger%20UI-b48cff?style=for-the-badge)](http://37.27.97.75:18000/docs#/)
-[![Dashboard](https://img.shields.io/badge/Dashboard-AEGIS%20UI-5fc77a?style=for-the-badge)](http://37.27.97.75:3001/dashboard)
+[![Live API](https://img.shields.io/badge/Live%20API-Swagger%20UI-b48cff?style=for-the-badge)](https://aegis.dmiruke.dev/docs#/)
+[![Dashboard](https://img.shields.io/badge/Dashboard-AEGIS%20UI-5fc77a?style=for-the-badge)](https://aegis-dashboard.dmiruke.dev/dashboard)
 
 # AEGIS Certify
 
@@ -17,32 +17,32 @@ No installation required. The API is live and ready to use:
 
 | Interface | URL |
 |-----------|-----|
-| Interactive API (Swagger UI) | http://37.27.97.75:18000/docs#/ |
-| OpenAPI Specification | http://37.27.97.75:18000/openapi.json |
-| Dashboard | http://37.27.97.75:3001/dashboard |
-| Health Check | http://37.27.97.75:18000/health |
+| Interactive API (Swagger UI) | https://aegis.dmiruke.dev/docs#/ |
+| OpenAPI Specification | https://aegis.dmiruke.dev/openapi.json |
+| Dashboard | https://aegis-dashboard.dmiruke.dev/dashboard |
+| Health Check | https://aegis.dmiruke.dev/health |
 
 ### Quick API Usage
 
 ```bash
 # Health check
-curl http://37.27.97.75:18000/health
+curl https://aegis.dmiruke.dev/health
 
 # List all research hypotheses (H1-H7)
-curl http://37.27.97.75:18000/api/v1/hypotheses
+curl https://aegis.dmiruke.dev/api/v1/hypotheses
 
 # List all experiments
-curl http://37.27.97.75:18000/api/v1/experiments
+curl https://aegis.dmiruke.dev/api/v1/experiments
 
 # List available metrics
-curl http://37.27.97.75:18000/api/v1/metrics/available
+curl https://aegis.dmiruke.dev/api/v1/metrics/available
 ```
 
 ### Context Graph / G16 Domain Drift Detection
 
 ```bash
 # 1. Build a certified context graph
-GRAPH=$(curl -s -X POST http://37.27.97.75:18000/api/v1/context-graph \
+GRAPH=$(curl -s -X POST https://aegis.dmiruke.dev/api/v1/context-graph \
   -H "Content-Type: application/json" \
   -d '{
     "name": "healthcare-agent",
@@ -61,25 +61,25 @@ GRAPH=$(curl -s -X POST http://37.27.97.75:18000/api/v1/context-graph \
 GRAPH_ID=$(echo $GRAPH | python3 -c "import json,sys; print(json.load(sys.stdin)['graph_id'])")
 
 # 2. Evaluate a path — PASS (all CERTIFIED nodes)
-curl -s -X POST http://37.27.97.75:18000/api/v1/context-graph/evaluate \
+curl -s -X POST https://aegis.dmiruke.dev/api/v1/context-graph/evaluate \
   -H "Content-Type: application/json" \
   -d "{\"graph_id\": \"$GRAPH_ID\", \"path\": [\"intake\", \"diagnosis\"]}"
 # → {"decision": "PASS", "enforcement": "NONE", ...}
 
 # 3. Evaluate a path — WARN (hits PROVISIONAL node → HITL)
-curl -s -X POST http://37.27.97.75:18000/api/v1/context-graph/evaluate \
+curl -s -X POST https://aegis.dmiruke.dev/api/v1/context-graph/evaluate \
   -H "Content-Type: application/json" \
   -d "{\"graph_id\": \"$GRAPH_ID\", \"path\": [\"intake\", \"diagnosis\", \"billing\"]}"
 # → {"decision": "WARN", "enforcement": "HITL", ...}
 
 # 4. Evaluate a path — FAIL (hits FORBIDDEN node → HALT)
-curl -s -X POST http://37.27.97.75:18000/api/v1/context-graph/evaluate \
+curl -s -X POST https://aegis.dmiruke.dev/api/v1/context-graph/evaluate \
   -H "Content-Type: application/json" \
   -d "{\"graph_id\": \"$GRAPH_ID\", \"path\": [\"intake\", \"diagnosis\", \"external\"], \"hard_mode\": true}"
 # → {"decision": "FAIL", "enforcement": "HALT", ...}
 
 # 5. Validate a single node
-curl -s -X POST http://37.27.97.75:18000/api/v1/context-graph/validate-node \
+curl -s -X POST https://aegis.dmiruke.dev/api/v1/context-graph/validate-node \
   -H "Content-Type: application/json" \
   -d "{\"graph_id\": \"$GRAPH_ID\", \"node_id\": \"external\"}"
 # → {"label": "FORBIDDEN", "is_forbidden": true, ...}

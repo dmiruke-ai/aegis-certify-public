@@ -28,7 +28,7 @@ Fellowship/
 - **Sprint Reports:** `../aegis-experimental-platform/docs/`
 - **Theoretical Foundation:** `../ARXIV-PAPERS/AEGIS Algebra_ A Unified Mathematical Framework.pdf`
 - **GitHub Repository:** https://github.com/dmiruke-ai/aegis-certify-public
-- **Live API:** http://37.27.97.75:18000/docs#/
+- **Live API:** https://aegis.dmiruke.dev/docs#/
 
 ## Key Results Summary
 

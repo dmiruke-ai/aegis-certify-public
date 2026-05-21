@@ -4,7 +4,7 @@
 
 ## Quick Start: Execute Experiments via Swagger UI
 
-**Swagger UI URL:** http://37.27.97.75:18000/docs
+**Swagger UI URL:** https://aegis.dmiruke.dev/docs
 
 ---
 
@@ -14,7 +14,7 @@
 
 **Endpoint:** `GET /api/v1/hypotheses`
 
-1. Go to Swagger UI: http://37.27.97.75:18000/docs
+1. Go to Swagger UI: https://aegis.dmiruke.dev/docs
 2. Expand the **Hypotheses** section
 3. Click `GET /api/v1/hypotheses` → **Try it out** → **Execute**
 
@@ -459,7 +459,7 @@ Load your full 866-case dataset:
 
 ```bash
 # From command line
-curl -X POST "http://37.27.97.75:18000/api/v1/experiments/{experiment_id}/test-cases/bulk" \
+curl -X POST "https://aegis.dmiruke.dev/api/v1/experiments/{experiment_id}/test-cases/bulk" \
   -H "Content-Type: application/json" \
   -d @/path/to/fellowship_tests_full.json
 ```
@@ -493,9 +493,9 @@ GET /api/v1/metrics/compare?experiment_id_1=exp-001&experiment_id_2=exp-002
 
 ## 📖 Full API Documentation
 
-**Interactive Docs:** http://37.27.97.75:18000/docs
-**ReDoc (Alternative):** http://37.27.97.75:18000/redoc
-**OpenAPI Spec:** http://37.27.97.75:18000/openapi.json
+**Interactive Docs:** https://aegis.dmiruke.dev/docs
+**ReDoc (Alternative):** https://aegis.dmiruke.dev/redoc
+**OpenAPI Spec:** https://aegis.dmiruke.dev/openapi.json
 
 ---
 
