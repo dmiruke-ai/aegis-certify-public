@@ -1,4 +1,3 @@
-> **PATENT PENDING** — Technology and methodology patent pending. All rights reserved.
 
 [![Live API](https://img.shields.io/badge/Live%20API-Swagger%20UI-b48cff?style=for-the-badge)](https://aegis.dmiruke.dev/docs#/)
 [![Dashboard](https://img.shields.io/badge/Dashboard-AEGIS%20UI-5fc77a?style=for-the-badge)](https://aegis-dashboard.dmiruke.dev/dashboard)
@@ -263,8 +262,10 @@ make validate-registry
 
 ## License
 
-Business Source License 1.1
+© 2026 Inferloop Technologies Inc. All rights reserved.
+Licensed under the Business Source License 1.1 (see LICENSE).
 
 ## Version
 
 1.0.0 (Standalone Distribution)
+
